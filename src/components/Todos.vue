@@ -13,7 +13,14 @@
           :checked="todo.completed"
           @change="markTodoCompleted(todo.id)"
         />
-        <button @click="deleteTodo(todo.id)">Delete</button>
+        <el-button
+          type="danger"
+          :loading="deleteId == todo.id"
+          size="mini"
+          @click="deleteTodo(todo.id)"
+        >
+          Delete
+        </el-button>
       </li>
     </ul>
     <p v-else style="text-align: center">Not authorised</p>
@@ -28,6 +35,11 @@ export default {
   name: "Todos",
   components: { TodoForm },
   computed: mapState(["todos", "auth"]),
+  data() {
+    return {
+      deleteId: 0,
+    };
+  },
   created() {
     this.getTodos();
   },
@@ -36,11 +48,15 @@ export default {
       this.$store.commit("MARK_COMPLETE", todoId);
     },
     deleteTodo(todoId) {
+      this.deleteId = todoId;
       this.$store.dispatch("deleteTodo", todoId);
+      setTimeout(() => {
+        this.deleting = 0;
+      }, 1000);
     },
     getTodos() {
-      this.$store.dispatch('getTodos');
-    }
+      this.$store.dispatch("getTodos");
+    },
   },
 };
 </script>
